@@ -1,14 +1,14 @@
 package main
 
 import (
-	"github.com/gorilla/mux"
-	"github.com/mmichaelb/sharexserver/webserver"
-	"github.com/mmichaelb/sharexserver/run/storages"
-	"net/http"
 	"bufio"
-	"os"
-	"log"
+	"github.com/gorilla/mux"
+	"github.com/mmichaelb/sharexserver/pkg/storage/storages"
+	"github.com/mmichaelb/sharexserver/pkg/webserver"
 	"gopkg.in/mgo.v2"
+	"log"
+	"net/http"
+	"os"
 	"time"
 )
 
@@ -16,12 +16,14 @@ import (
 const Address = "localhost:10711"
 
 // general information about the application
-var applicationName = "ShareX server"
-var version = "v0.1.0"
+var applicationName = "{application_name}"
+var version = "{version}"
+var branch = "{branch}"
+var commit = "{commit}"
 var author = "mmichaelb"
 
 func main() {
-	log.Printf("Starting %v %v by %v...\n", applicationName, version, author)
+	log.Printf("Starting %v %v (%v/%v) by %v...\n", applicationName, version, branch, commit, author)
 	router := mux.NewRouter()
 	storage := &storages.MongoStorage{
 		DialInfo: &mgo.DialInfo{

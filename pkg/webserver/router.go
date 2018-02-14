@@ -1,11 +1,11 @@
 package webserver
 
 import (
-	"net/http"
-	"github.com/gorilla/mux"
-	"github.com/mmichaelb/sharexserver/storage"
-	"log"
 	"fmt"
+	"github.com/gorilla/mux"
+	"github.com/mmichaelb/sharexserver/pkg/storage"
+	"log"
+	"net/http"
 )
 
 const contentTypeHeader = "Content-Type"

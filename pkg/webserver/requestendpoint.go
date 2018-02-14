@@ -1,12 +1,12 @@
 package webserver
 
 import (
-	"net/http"
-	"github.com/gorilla/mux"
-	"github.com/mmichaelb/sharexserver/storage"
-	"strings"
 	"fmt"
+	"github.com/gorilla/mux"
+	"github.com/mmichaelb/sharexserver/pkg/storage"
+	"net/http"
 	"strconv"
+	"strings"
 )
 
 const (

@@ -1,13 +1,13 @@
 package webserver
 
 import (
-	"mime/multipart"
-	"github.com/mmichaelb/sharexserver/storage"
-	"time"
+	"fmt"
+	"github.com/mmichaelb/sharexserver/pkg/storage"
 	"io"
 	"log"
-	"fmt"
+	"mime/multipart"
 	"net/http"
+	"time"
 )
 
 const (

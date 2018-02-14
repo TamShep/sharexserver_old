@@ -1,8 +1,8 @@
 package storage
 
 import (
-	"time"
 	"io"
+	"time"
 )
 
 // AuthorIdentifier identifies the author. It currently is a simple access token.

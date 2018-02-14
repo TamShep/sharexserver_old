@@ -1,22 +1,22 @@
 package storages
 
 import (
-	"github.com/mmichaelb/sharexserver/storage"
-	"io"
+	"bytes"
+	"errors"
+	"github.com/mmichaelb/sharexserver/pkg/storage"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"bytes"
-	"math/rand"
+	"io"
 	"log"
-	"strconv"
+	"math/rand"
 	"os"
+	"strconv"
 	"time"
-	"errors"
 )
 
 const (
 	// Status constants for entries
-	statusWaiting   = iota
+	statusWaiting = iota
 	statusActivated
 	statusFailed
 	// Data to generate new call references
@@ -72,8 +72,7 @@ func (writeCloser *StatusChangeWriteCloser) Close() (err error) {
 		updatedStatus = statusActivated
 	}
 	// update database entry
-	if mongoErr := writeCloser.Collection.UpdateId(writeCloser.ID, bson.M{"$set": bson.M{statusField: updatedStatus}});
-		err != nil {
+	if mongoErr := writeCloser.Collection.UpdateId(writeCloser.ID, bson.M{"$set": bson.M{statusField: updatedStatus}}); err != nil {
 		log.Printf("An error occurred while updating the status of %v, %T: %+v",
 			strconv.Quote(writeCloser.ID.String()), mongoErr, mongoErr)
 	}
@@ -94,7 +93,7 @@ func (mongoStorage *MongoStorage) Store(entry *storage.Entry) (writer io.WriteCl
 	// use the provided collection to store the data in
 	collection := mongoStorage.session.DB(mongoStorage.DatabaseName).C(mongoStorage.CollectionName)
 randomCreation:
-// create a new random ID and call reference
+	// create a new random ID and call reference
 	objectId := bson.NewObjectId()
 	entry.ID = objectId
 	entry.CallReference = mongoStorage.newCallReference()
@@ -132,11 +131,11 @@ randomCreation:
 }
 
 // method which randomly creates a new call reference
-func (mongoStorage *MongoStorage) newCallReference() (string) {
+func (mongoStorage *MongoStorage) newCallReference() string {
 	buf := bytes.NewBuffer([]byte{})
 	for i := 0; i < callReferenceLength; i++ {
 		randomIndex := rand.Intn(len(callReferenceChars))
-		buf.WriteString(callReferenceChars[randomIndex:randomIndex+1])
+		buf.WriteString(callReferenceChars[randomIndex : randomIndex+1])
 	}
 	return buf.String()
 }
