@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-// listen to all network interfaces on port 10711 which is one of the centered triangular primes
+// Address determines the address, the web server should listen to
 const Address = "localhost:10711"
 
 // general information about the application

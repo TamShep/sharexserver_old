@@ -79,6 +79,7 @@ func (writeCloser *StatusChangeWriteCloser) Close() (err error) {
 	return
 }
 
+// Initialize is the implementation of the Storage.Initialize method
 func (mongoStorage *MongoStorage) Initialize() (err error) {
 	// create folder for stored files
 	if err = os.MkdirAll(mongoStorage.DataFolder, os.ModePerm); err != nil {
@@ -89,6 +90,7 @@ func (mongoStorage *MongoStorage) Initialize() (err error) {
 	return
 }
 
+// Store is the implementation of the Storage.Store method
 func (mongoStorage *MongoStorage) Store(entry *storage.Entry) (writer io.WriteCloser, err error) {
 	// use the provided collection to store the data in
 	collection := mongoStorage.session.DB(mongoStorage.DatabaseName).C(mongoStorage.CollectionName)
@@ -179,6 +181,7 @@ func (fileBasedReadCloseSeekOpener *FileBasedReadCloseSeekOpener) Open() (err er
 	return
 }
 
+// Request is the implementation of the Storage.Request method
 func (mongoStorage *MongoStorage) Request(callReference string) (*storage.Entry, error) {
 	collection := mongoStorage.session.DB(mongoStorage.DatabaseName).C(mongoStorage.CollectionName)
 	// read result to a simple bson map
@@ -207,6 +210,7 @@ func (mongoStorage *MongoStorage) Request(callReference string) (*storage.Entry,
 	return entry, nil
 }
 
+// Close is the implementation of the Storage.Close method
 func (mongoStorage *MongoStorage) Close() error {
 	// close connection to MongoDB server
 	mongoStorage.session.Close()

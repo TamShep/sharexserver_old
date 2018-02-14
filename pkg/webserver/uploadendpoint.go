@@ -47,30 +47,29 @@ func (shareXRouter *ShareXRouter) handleUpload(writer http.ResponseWriter, reque
 	if fileWriter, err = shareXRouter.Storage.Store(entry); err != nil {
 		shareXRouter.sendInternalError(writer, "storing new file entry", err)
 		return
-	} else {
-		// write file data to the returned writer
-		defer func() {
-			if err := fileWriter.Close(); err != nil {
-				log.Printf("There was an error while closing the file writer, %T: %+v", err, err)
-			}
-		}()
-		total, err := writeFile(file, fileWriter)
-		if err != nil {
-			shareXRouter.sendInternalError(writer, "writing file data to new entry", err)
-			return
-		}
-		log.Printf("Created entry %v (%v bytes)\n", entry.ID, total)
-		// send back entry url
-		writer.WriteHeader(http.StatusOK)
-		url := fmt.Sprintf(urlScheme, request.Host, entry.CallReference)
-		writer.Write([]byte(url))
 	}
+	// write file data to the returned writer
+	defer func() {
+		if err := fileWriter.Close(); err != nil {
+			log.Printf("There was an error while closing the file writer, %T: %+v", err, err)
+		}
+	}()
+	total, err := writeFile(file, fileWriter)
+	if err != nil {
+		shareXRouter.sendInternalError(writer, "writing file data to new entry", err)
+		return
+	}
+	log.Printf("Created entry %v (%v bytes)\n", entry.ID, total)
+	// send back entry url
+	writer.WriteHeader(http.StatusOK)
+	url := fmt.Sprintf(urlScheme, request.Host, entry.CallReference)
+	writer.Write([]byte(url))
 }
 
 // writeFile writes the received uploaded data to the provided writer by the stored entry
 func writeFile(file multipart.File, fileWriter io.WriteCloser) (int64, error) {
 	// count total byte amount
-	var total int64 = 0
+	var total int64
 	// do not stop iterating until no more bytes are available
 	for {
 		buffer := make([]byte, receiveBufferSize)
