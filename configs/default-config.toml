@@ -1,0 +1,8 @@
+# Configuration template of the ShareX Server
+#
+# This is the address the webserver will bind to. (default: localhost:10711)
+webserver_address = "localhost:10711"
+# The storage engine used to store uplodaed files or other information.
+storage_engine = "MongoDB+file"
+# The path to the configuration file used by the storage engine.
+storage_engine_config = "./mongo-storage-config.toml"

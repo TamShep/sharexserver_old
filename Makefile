@@ -12,3 +12,7 @@ build:
 # installs and formats the project with the built-in Golang tool
 install:
 	@go install -ldflags '${LD_FLAGS}' ./cmd/sharexserver
+
+# tests the project by running all test go files
+test:
+	@go test -race $(go list ./... | grep -v /vendor/ | grep -v /cmd/)

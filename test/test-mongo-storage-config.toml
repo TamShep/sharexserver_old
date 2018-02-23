@@ -1,0 +1,14 @@
+# THIS IS A TEST CONFIGURATION FILE, FOR DEFAULT CONFIGURATIONS SEE ../configs/
+#
+# Configuration template for the MongoDB storage type of the ShareX server for testing purposes
+#
+## only test values
+address = "0.0.0.0:1337"
+connect_timeout = "1m30s"
+storage_folder = "./sharex-files/"
+auth_db = "sharex-admin-db"
+auth_user = "l_torvalds"
+auth_passwd = "MySuperSecurePassword+!#"
+storage_db = "sharex-upload-metadata"
+# this is commented intentionally to test the default values
+#storage_file_col = "uploads"

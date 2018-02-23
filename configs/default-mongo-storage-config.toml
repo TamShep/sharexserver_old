@@ -1,0 +1,16 @@
+# Configuration template for the MongoDB storage type of the ShareX server
+#
+# MongoDB remote server address the application should connect to.
+address = "localhost:27017"
+# The MongoDB connect timeout can be set according to the Golang time.Parse conventions.
+connect_timeout = "4s"
+# The folder where uploaded file data should be stored in.
+storage_folder = "./files/"
+# Per default not authorization is used. If you want to use authorization, just uncomment the following lines.
+#auth_db = "admin"
+#auth_user = "sharexserver"
+#auth_passwd = "<your-secret-password>"
+# All ShareX Server data is stored inside this database.
+storage_db = "sharexserver"
+# New uploaded file metadata is stored in this collection.
+storage_file_col = "uploads"
