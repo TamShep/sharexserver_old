@@ -3,11 +3,11 @@ package webserver
 import (
 	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/mmichaelb/sharexserver/internal/sharexserver/config"
 	"github.com/mmichaelb/sharexserver/pkg/storage"
 	"net/http"
 	"strconv"
 	"strings"
-	"github.com/mmichaelb/sharexserver/internal/sharexserver/config"
 )
 
 const (

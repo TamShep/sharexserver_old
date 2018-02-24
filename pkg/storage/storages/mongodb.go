@@ -22,6 +22,8 @@ const (
 	// Data to generate new call references
 	callReferenceChars  = "abcdefghijklmnopqrstuvxyzABCDEFGHIJKLMNOPQRSTUVXYZ1234567890"
 	callReferenceLength = 6
+	// MongoDB index names
+	referenceIndexName = "reference_index"
 	// MongoDB key names
 	iDField            = "_id"
 	statusField        = "status"
@@ -87,6 +89,21 @@ func (mongoStorage *MongoStorage) Initialize() (err error) {
 	}
 	// connect to MongoDB server
 	mongoStorage.session, err = mgo.DialWithInfo(mongoStorage.DialInfo)
+	// create call reference index if it not exists
+	collection := mongoStorage.session.DB(mongoStorage.DatabaseName).C(mongoStorage.CollectionName)
+	indexes, err := collection.Indexes()
+	if err != nil {
+		return
+	}
+	for _, index := range indexes {
+		if index.Name == referenceIndexName {
+			return
+		}
+	}
+	err = collection.EnsureIndex(mgo.Index{
+		Name: referenceIndexName,
+		Key:  []string{callReferenceField},
+	})
 	return
 }
 
