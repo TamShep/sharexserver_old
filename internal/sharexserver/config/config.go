@@ -19,6 +19,11 @@ func loadCfg(fileName string) (cfg *viper.Viper, err error) {
 	cfg.SetDefault("storage_engine", "MongoDB+file")
 	cfg.SetDefault("storage_engine_config", "./mongo-storage-config.toml")
 	cfg.SetDefault("reverse_proxy_header", "")
+	cfg.SetDefault("whitelisted_content_types", []string{
+		"image/png", "image/jpeg", "image/jpg", "image/gif",
+		"text/plain", "text/plain; charset=utf-8",
+		"video/mp4", "video/mpeg", "video/mpg4", "video/mpeg4", "video/flv",
+	})
 	// read config from filepath
 	err = cfg.ReadInConfig()
 	return

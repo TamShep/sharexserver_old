@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"github.com/mmichaelb/sharexserver/internal/sharexserver/config"
 )
 
 const (
@@ -14,11 +15,6 @@ const (
 	dispositionHeader      = "Content-Disposition"
 	dispositionValueFormat = "%v; filename=\"%v\""
 )
-
-var whitelistedMimeTypes = []string{
-	"image/png", "image/jpeg", "image/jpg", "image/gif", "text/plain", "text/plain; charset=utf-8",
-	"video/mp4", "video/mpeg", "video/mpg4", "video/mpeg4", "video/flv",
-}
 
 // handleRequest is the endpoint which handles incoming file requests via link. It uses the var with the key stored in
 // callReferenceVar to resolve the database entry.
@@ -48,7 +44,7 @@ func (shareXRouter *ShareXRouter) handleRequest(writer http.ResponseWriter, requ
 	defer entry.Reader.Close()
 	// send disposition header
 	var dispositionType string
-	for _, entryMimeType := range whitelistedMimeTypes {
+	for _, entryMimeType := range config.Cfg.GetStringSlice("whitelisted_content_types") {
 		if strings.EqualFold(entryMimeType, entry.ContentType) {
 			dispositionType = "inline"
 		}

@@ -10,3 +10,10 @@ storage_engine_config = "./mongo-storage-config.toml"
 # address header. Be careful that headers in go are always set in lower case camel case, e.g. "REAL-IP-ADDRESS" would be
 # "Real-Ip-Address"
 #reverse_proxy_header = "X-Real-Ip"
+# This array specifies whitelisted content types which will be embedded when request a resource. The default values are
+# the standard image, text and video mime types.
+whitelisted_content_types = [
+    "image/png", "image/jpeg", "image/jpg", "image/gif",
+    "text/plain", "text/plain; charset=utf-8",
+    "video/mp4", "video/mpeg", "video/mpg4", "video/mpeg4", "video/flv"
+]
