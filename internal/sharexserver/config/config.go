@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+// this is a general configuration instance which is not bound to an instance of a struct
 var Cfg *viper.Viper
 
 func loadCfg(fileName string) (cfg *viper.Viper, err error) {
@@ -17,6 +18,7 @@ func loadCfg(fileName string) (cfg *viper.Viper, err error) {
 	cfg.SetDefault("webserver_address", "localhost:10711")
 	cfg.SetDefault("storage_engine", "MongoDB+file")
 	cfg.SetDefault("storage_engine_config", "./mongo-storage-config.toml")
+	cfg.SetDefault("reverse_proxy_header", "")
 	// read config from filepath
 	err = cfg.ReadInConfig()
 	return

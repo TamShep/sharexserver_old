@@ -19,4 +19,7 @@ func TestMainConfig(t *testing.T) {
 	if storageEngineConfig := cfg.GetString("storage_engine_config"); storageEngineConfig != "./mongo-storage-config.toml" {
 		t.Fatalf(`Invalid value for "storage_engine_config": %s\n`, strconv.Quote(storageEngineConfig))
 	}
+	if reverseProxyHeader := cfg.GetString("reverse_proxy_header"); reverseProxyHeader != "This-Header-Contains-The-Real-IP" {
+		t.Fatalf(`Invalid value for "reverse_proxy_header": %s\n`, strconv.Quote(reverseProxyHeader))
+	}
 }

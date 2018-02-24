@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"flag"
 	"github.com/gorilla/mux"
+	"github.com/mmichaelb/sharexserver/internal/sharexserver"
 	"github.com/mmichaelb/sharexserver/internal/sharexserver/config"
 	"github.com/mmichaelb/sharexserver/pkg/storage"
 	"github.com/mmichaelb/sharexserver/pkg/webserver"
@@ -12,9 +13,6 @@ import (
 	"os"
 	"strconv"
 )
-
-// Address determines the address, the web server should listen to
-const Address = "localhost:10711"
 
 // general information about the application
 var applicationName = "{application_name}"
@@ -68,11 +66,20 @@ func main() {
 		Storage: fileStorage,
 	}
 	shareXRouter.BindToRouter(router)
-	httpServer := http.Server{
-		Addr:    Address,
-		Handler: router,
+	var handler http.Handler
+	// check if a reverse proxy is used
+	if reverseProxyHeader := config.Cfg.GetString("reverse_proxy_header"); reverseProxyHeader != "" {
+		handler = sharexserver.WrapRouterToReverseProxyRouter(router, reverseProxyHeader)
+	} else {
+		handler = router
 	}
-	log.Println("Running ShareX server in background. Enter \"close\" or \"stop\" to shutdown the ShareX server!")
+	webserverAddress := config.Cfg.GetString("webserver_address")
+	httpServer := http.Server{
+		Addr:    webserverAddress,
+		Handler: handler,
+	}
+	log.Printf("Running ShareX server in background and listening for connections on %s. "+
+		"Enter \"close\" or \"stop\" to shutdown the ShareX server!\n", strconv.Quote(webserverAddress))
 	var closed bool
 	go func() {
 		// run http server in background

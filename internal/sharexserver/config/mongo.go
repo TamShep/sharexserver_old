@@ -29,6 +29,8 @@ func loadMongoCfg(fileName string) (mongoCfg *viper.Viper, err error) {
 	return
 }
 
+// ParseMongoStorageFromConfig parses an implemented MongoDB+file storage from the given fileName which is the path
+// pointing to the configuration file. It returns the file storage and an error if something goes wrong.
 func ParseMongoStorageFromConfig(fileName string) (storage storage.FileStorage, err error) {
 	var mongoCfg *viper.Viper
 	mongoCfg, err = loadMongoCfg(fileName)

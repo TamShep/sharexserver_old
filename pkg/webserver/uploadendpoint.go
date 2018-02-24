@@ -1,7 +1,6 @@
 package webserver
 
 import (
-	"fmt"
 	"github.com/mmichaelb/sharexserver/pkg/storage"
 	"io"
 	"log"
@@ -13,7 +12,6 @@ import (
 const (
 	maximumMemoryBytes = 1 << 20 // 1 MB maximum in memory
 	receiveBufferSize  = 1 << 20 // 1 MB maximum in memory here too
-	urlScheme          = "http://%v/%v"
 	defaultUser        = "default user"
 	multipartFormName  = "file"
 )
@@ -62,8 +60,8 @@ func (shareXRouter *ShareXRouter) handleUpload(writer http.ResponseWriter, reque
 	log.Printf("Created entry %v (%v bytes)\n", entry.ID, total)
 	// send back entry url
 	writer.WriteHeader(http.StatusOK)
-	url := fmt.Sprintf(urlScheme, request.Host, entry.CallReference)
-	writer.Write([]byte(url))
+	// there is no need of writing the whole url - therefore only the call reference if written
+	writer.Write([]byte(entry.CallReference))
 }
 
 // writeFile writes the received uploaded data to the provided writer by the stored entry
