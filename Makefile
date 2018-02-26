@@ -1,5 +1,5 @@
 APPLICATION_NAME = ShareX Server
-VERSION = 0.1.0
+VERSION = 0.2.0
 BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
 COMMIT = $(shell git rev-parse HEAD)
 

@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-// this is a general configuration instance which is not bound to an instance of a struct
+// Cfg is a general configuration instance which is not bound to an instance of a struct
 var Cfg *viper.Viper
 
 func loadCfg(fileName string) (cfg *viper.Viper, err error) {
@@ -29,6 +29,7 @@ func loadCfg(fileName string) (cfg *viper.Viper, err error) {
 	return
 }
 
+// LoadMainConfig loads the main config and stores the data into the Cfg variable.
 func LoadMainConfig(fileName string) (err error) {
 	if Cfg, err = loadCfg(fileName); err != nil {
 		if os.IsNotExist(err) {

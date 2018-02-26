@@ -1,4 +1,4 @@
-package webserver
+package router
 
 import (
 	"github.com/mmichaelb/sharexserver/pkg/storage"

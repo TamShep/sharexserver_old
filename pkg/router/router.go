@@ -1,4 +1,4 @@
-package webserver
+package router
 
 import (
 	"fmt"
@@ -16,11 +16,14 @@ type ShareXRouter struct {
 	Storage storage.FileStorage
 }
 
-// BindToRouter binds the ShareX router to the given super-router.
-func (shareXRouter *ShareXRouter) BindToRouter(router *mux.Router) {
+// GetHandler returns an instance of the http.Handler to afford easy dependency access.
+func (shareXRouter *ShareXRouter) GetHandler() http.Handler {
+	// create new router instance
+	router := mux.NewRouter()
 	// register endpoints
 	router.Path("/upload").Methods(http.MethodPost).HandlerFunc(shareXRouter.handleUpload)
 	router.Path(fmt.Sprintf("/{%v}", callReferenceVar)).HandlerFunc(shareXRouter.handleRequest)
+	return router
 }
 
 // sendInternalError generalizes the internal error method.

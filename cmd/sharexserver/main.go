@@ -7,11 +7,11 @@ import (
 	"github.com/mmichaelb/sharexserver/internal/sharexserver"
 	"github.com/mmichaelb/sharexserver/internal/sharexserver/config"
 	"github.com/mmichaelb/sharexserver/pkg/storage"
-	"github.com/mmichaelb/sharexserver/pkg/webserver"
 	"log"
 	"net/http"
 	"os"
 	"strconv"
+	"github.com/mmichaelb/sharexserver/pkg/router"
 )
 
 // general information about the application
@@ -36,7 +36,7 @@ func main() {
 	}
 	log.Printf("Successfully loaded %d configuration keys.\n", len(config.Cfg.AllKeys()))
 	// setup default mux router
-	router := mux.NewRouter()
+	muxRouter := mux.NewRouter()
 	var fileStorage storage.FileStorage
 	var err error
 	// determine from configuration value which file storage system should be used
@@ -60,18 +60,19 @@ func main() {
 		log.Fatalf("There was an error while initializing the storage (%s), %T: %v\n",
 			strconv.Quote(storageEngine), err, err)
 	}
-	log.Println("Done with storage initialization! Continuing with the binding of the ShareX router...")
-	// bind ShareXRouter to previously initialized mux router
-	shareXRouter := &webserver.ShareXRouter{
+	log.Println("Done with storage initialization! Continuing with the binding of the ShareX muxRouter...")
+	// bind ShareXRouter to previously initialized mux muxRouter
+	shareXRouter := &router.ShareXRouter{
 		Storage: fileStorage,
 	}
-	shareXRouter.BindToRouter(router)
+	// bind ShareX server handler to existing mux muxRouter
+	muxRouter.Handle("/", shareXRouter.GetHandler())
 	var handler http.Handler
 	// check if a reverse proxy is used
 	if reverseProxyHeader := config.Cfg.GetString("reverse_proxy_header"); reverseProxyHeader != "" {
-		handler = sharexserver.WrapRouterToReverseProxyRouter(router, reverseProxyHeader)
+		handler = sharexserver.WrapRouterToReverseProxyRouter(muxRouter, reverseProxyHeader)
 	} else {
-		handler = router
+		handler = muxRouter
 	}
 	webserverAddress := config.Cfg.GetString("webserver_address")
 	httpServer := http.Server{

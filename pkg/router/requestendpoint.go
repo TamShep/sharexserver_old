@@ -1,4 +1,4 @@
-package webserver
+package router
 
 import (
 	"fmt"
