@@ -38,6 +38,7 @@ To use this project as a dependency for your own project, you can just `go get` 
 ```bash
 go get -u github.com/mmichaelb/sharexserver/cmd/sharexserver
 ```
+See the [examples package](https://github.com/mmichaelb/sharexserver/tree/master/examples/) for implemented examples and use cases.
 
 # Contribution
 Feel free to contribute and help this project to grow. You can also just suggest features/enhancements - for more details check the [contributing file](https://github.com/mmichaelb/sharexserver/tree/master/.github/CONTRIBUTING.md).

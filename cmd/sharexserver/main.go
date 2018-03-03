@@ -6,12 +6,12 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/mmichaelb/sharexserver/internal/sharexserver"
 	"github.com/mmichaelb/sharexserver/internal/sharexserver/config"
+	"github.com/mmichaelb/sharexserver/pkg/router"
 	"github.com/mmichaelb/sharexserver/pkg/storage"
 	"log"
 	"net/http"
 	"os"
 	"strconv"
-	"github.com/mmichaelb/sharexserver/pkg/router"
 )
 
 // general information about the application
