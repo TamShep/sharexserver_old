@@ -1,0 +1,13 @@
+# THIS IS A TEST CONFIGURATION FILE, FOR DEFAULT CONFIGURATIONS SEE ../configs/
+#
+# Configuration template of the ShareX Server for testing purposes
+#
+# only test values
+webserver_address = ":80"
+storage_engine = "Magic+fairy_dust"
+# this is commented intentionally to test the default values
+#storage_engine_config = "./mongo-storage-config.toml"
+reverse_proxy_header = "This-Header-Contains-The-Real-IP"
+whitelisted_content_types = [
+    "first-ct", "a-mime-type", "sp€ci4l"
+]
