@@ -35,7 +35,8 @@ func main() {
 	}
 	// setup ShareX router
 	shareXRouter := router.ShareXRouter{
-		Storage: fileStorage,
+		Storage:                 fileStorage,
+		WhitelistedContentTypes: []string{"image/png", "image/jpeg"},
 	}
 	// add ShareX handler to main router
 	shareXRouter.WrapHandler(mainRouter.PathPrefix("/sharex/").Subrouter())

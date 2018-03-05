@@ -63,7 +63,8 @@ func main() {
 	log.Println("Done with storage initialization! Continuing with the binding of the ShareX muxRouter...")
 	// bind ShareXRouter to previously initialized mux muxRouter
 	shareXRouter := &router.ShareXRouter{
-		Storage: fileStorage,
+		Storage:                 fileStorage,
+		WhitelistedContentTypes: config.Cfg.GetStringSlice("whitelisted_content_types"),
 	}
 	// bind ShareX server handler to existing mux muxRouter
 	shareXRouter.WrapHandler(muxRouter.PathPrefix("/").Subrouter())
