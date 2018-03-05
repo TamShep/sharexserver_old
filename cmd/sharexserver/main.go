@@ -66,7 +66,7 @@ func main() {
 		Storage: fileStorage,
 	}
 	// bind ShareX server handler to existing mux muxRouter
-	muxRouter.Handle("/", shareXRouter.GetHandler())
+	shareXRouter.WrapHandler(muxRouter.PathPrefix("/").Subrouter())
 	var handler http.Handler
 	// check if a reverse proxy is used
 	if reverseProxyHeader := config.Cfg.GetString("reverse_proxy_header"); reverseProxyHeader != "" {

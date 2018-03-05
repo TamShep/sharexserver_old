@@ -38,7 +38,7 @@ func main() {
 		Storage: fileStorage,
 	}
 	// add ShareX handler to main router
-	mainRouter.PathPrefix("/sharex/").Handler(shareXRouter.GetHandler())
+	shareXRouter.WrapHandler(mainRouter.PathPrefix("/sharex/").Subrouter())
 	httpServer := http.Server{
 		Handler: mainRouter,        // use the gorilla/mux router as the http handler
 		Addr:    "localhost:10711", // bind to local loop-back interface on port 8080
