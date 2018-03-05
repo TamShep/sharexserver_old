@@ -2,13 +2,16 @@ package storages
 
 import (
 	"bytes"
+	cryptRand "crypto/rand"
 	"errors"
+	"fmt"
 	"github.com/mmichaelb/sharexserver/pkg/storage"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"io"
 	"log"
-	"math/rand"
+	"math/big"
+	mathRand "math/rand"
 	"os"
 	"strconv"
 	"time"
@@ -89,15 +92,24 @@ func (mongoStorage *MongoStorage) Initialize() (err error) {
 	}
 	// connect to MongoDB server
 	mongoStorage.session, err = mgo.DialWithInfo(mongoStorage.DialInfo)
-	// create call reference index if it not exists
-	collection := mongoStorage.session.DB(mongoStorage.DatabaseName).C(mongoStorage.CollectionName)
-	indexes, err := collection.Indexes()
 	if err != nil {
 		return
 	}
-	for _, index := range indexes {
-		if index.Name == referenceIndexName {
-			return
+	// create call reference index if it not exists
+	database := mongoStorage.session.DB(mongoStorage.DatabaseName)
+	collection := database.C(mongoStorage.CollectionName)
+	// check whether db/collection exists
+	if names, err := database.CollectionNames(); err != nil {
+		return err
+	} else if len(names) > 0 {
+		indexes, err := collection.Indexes()
+		if err != nil {
+			return err
+		}
+		for _, index := range indexes {
+			if index.Name == referenceIndexName {
+				return err
+			}
 		}
 	}
 	err = collection.EnsureIndex(mgo.Index{
@@ -109,6 +121,7 @@ func (mongoStorage *MongoStorage) Initialize() (err error) {
 
 // Store is the implementation of the Storage.Store method
 func (mongoStorage *MongoStorage) Store(entry *storage.Entry) (writer io.WriteCloser, err error) {
+	fmt.Printf("%d %d %d\n", statusWaiting, statusActivated, statusFailed)
 	// use the provided collection to store the data in
 	collection := mongoStorage.session.DB(mongoStorage.DatabaseName).C(mongoStorage.CollectionName)
 randomCreation:
@@ -118,16 +131,15 @@ randomCreation:
 	entry.CallReference = mongoStorage.newCallReference()
 	// insert the file details into the collection
 	if err = collection.Insert(
-		bson.M{
-			iDField:            entry.ID,
-			statusField:        statusWaiting, // set entry to waiting because the file data is not stored yet
-			callReferenceField: entry.CallReference,
-			authorField:        entry.Author,
-			filenameField:      entry.Filename,
-			contentTypeField:   entry.ContentType,
-			uploadDateField:    entry.UploadDate,
-		},
-	); err != nil {
+		bson.D{
+			{iDField, entry.ID},
+			{statusField, statusWaiting}, // set entry to waiting because the file data is not stored yet
+			{callReferenceField, entry.CallReference},
+			{authorField, entry.Author},
+			{filenameField, entry.Filename},
+			{contentTypeField, entry.ContentType},
+			{uploadDateField, entry.UploadDate},
+		}); err != nil {
 		if lastErr, ok := err.(*mgo.LastError); ok && lastErr.Code == 11000 {
 			// duplicate key error
 			goto randomCreation
@@ -152,8 +164,17 @@ randomCreation:
 // method which randomly creates a new call reference
 func (mongoStorage *MongoStorage) newCallReference() string {
 	buf := bytes.NewBuffer([]byte{})
+	randomMaximum := big.NewInt(int64(len(callReferenceChars)))
 	for i := 0; i < callReferenceLength; i++ {
-		randomIndex := rand.Intn(len(callReferenceChars))
+		var randomIndex int
+		randomIntIndex, err := cryptRand.Int(cryptRand.Reader, randomMaximum)
+		if err != nil {
+			log.Printf("Could not get create random call reference with crypto/rand. "+
+				"Falling back to (insecure) math/rand package. %T: %v\n", err, err)
+			randomIndex = mathRand.Intn(len(callReferenceChars))
+		} else {
+			randomIndex = int(randomIntIndex.Int64())
+		}
 		buf.WriteString(callReferenceChars[randomIndex : randomIndex+1])
 	}
 	return buf.String()
@@ -229,6 +250,8 @@ func (mongoStorage *MongoStorage) Request(callReference string) (*storage.Entry,
 
 // Close is the implementation of the Storage.Close method
 func (mongoStorage *MongoStorage) Close() error {
+	// logout from MongoDB server and revoke sent credentials
+	mongoStorage.session.LogoutAll()
 	// close connection to MongoDB server
 	mongoStorage.session.Close()
 	return nil
