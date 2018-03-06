@@ -3,7 +3,6 @@ package router
 import (
 	"fmt"
 	"github.com/gorilla/mux"
-	"github.com/mmichaelb/sharexserver/internal/sharexserver/config"
 	"github.com/mmichaelb/sharexserver/pkg/storage"
 	"net/http"
 	"strconv"
@@ -44,7 +43,7 @@ func (shareXRouter *ShareXRouter) handleRequest(writer http.ResponseWriter, requ
 	defer entry.Reader.Close()
 	// send disposition header
 	var dispositionType string
-	for _, entryMimeType := range config.Cfg.GetStringSlice("whitelisted_content_types") {
+	for _, entryMimeType := range shareXRouter.WhitelistedContentTypes {
 		if strings.EqualFold(entryMimeType, entry.ContentType) {
 			dispositionType = "inline"
 		}

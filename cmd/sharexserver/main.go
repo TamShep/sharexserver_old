@@ -63,10 +63,11 @@ func main() {
 	log.Println("Done with storage initialization! Continuing with the binding of the ShareX muxRouter...")
 	// bind ShareXRouter to previously initialized mux muxRouter
 	shareXRouter := &router.ShareXRouter{
-		Storage: fileStorage,
+		Storage:                 fileStorage,
+		WhitelistedContentTypes: config.Cfg.GetStringSlice("whitelisted_content_types"),
 	}
 	// bind ShareX server handler to existing mux muxRouter
-	muxRouter.Handle("/", shareXRouter.GetHandler())
+	shareXRouter.WrapHandler(muxRouter.PathPrefix("/").Subrouter())
 	var handler http.Handler
 	// check if a reverse proxy is used
 	if reverseProxyHeader := config.Cfg.GetString("reverse_proxy_header"); reverseProxyHeader != "" {
