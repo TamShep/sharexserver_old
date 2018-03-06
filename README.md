@@ -2,21 +2,21 @@
 Lightweight upload server for the ShareX client (https://getsharex.com/).
 
 # Description
-This application can be used as a standalone server side endpoint for your ShareX client. It is written in Go and designed to be lightweight and easy to understand. If you are a Golang developer you can also use this project as your dependency and use the code inside your own project.
+This application can be used as a standalone server side endpoint for your ShareX client. It is written in Go and designed to be lightweight and easy to understand. If you are a Golang developer, you can also use this project as your dependency and use the code in your own project.
 
 # Installation
 ## Getting the binaries
 In order to install the ShareX server you have to get the binaries. There two possible methods of getting them:
 - download a release file from the [GitHub releases page](https://github.com/mmichaelb/sharexserver/releases)
-- compile the source manually on your own (see [Compilation](https://github.com/mmichaelb/sharexserver#compilation)
+- compile the source manually on your own (see [Compilation](https://github.com/mmichaelb/sharexserver#compilation))
 ## Download default configuration files
-In order to adjust values of the application's runtime, you should download the default configs to get an orientation. The downloads can be found in the [configs directory](https://github.com/mmichaelb/sharexserver/tree/master/configs). After downloading the configuration you should rename it and adjust the values according to the [TOML conventions](https://github.com/toml-lang/toml).
+In order to adjust values of the application's runtime, you should download the default configurations to get an orientation. The downloads can be found in the [config directory](https://github.com/mmichaelb/sharexserver/tree/master/configs). After downloading the configuration you should rename it and adjust the values according to the [TOML conventions](https://github.com/toml-lang/toml).
 ## Running the application
 At the moment the only parameter which the application accepts on startup is -config - you can specify the path to your configuration file. If you do not specify one, the default path (`./config`) is used. An example of running the application would be:
 ```bash
 ./your-executable -config=./my-custom-config.toml
 ```
-Have fun and feel free to open up an issue if you have a problem with running your application. In the future I hope that I can provide an auto-installation script or provide a custom Docker image.
+Have fun and feel free to open up an issue if you have a problem with running your application. In the future, I hope that I can provide an auto-installation script or provide a custom Docker image.
 
 # Compilation
 The compilation of this code was successful with Go 1.8 and 1.9 - newer versions should normally work as well.
@@ -38,7 +38,7 @@ To use this project as a dependency for your own project, you can just `go get` 
 ```bash
 go get -u github.com/mmichaelb/sharexserver/cmd/sharexserver
 ```
-See the [examples package](https://github.com/mmichaelb/sharexserver/tree/master/examples/) for implemented examples and use cases.
+Make sure to check out the [examples package](https://github.com/mmichaelb/sharexserver/tree/master/examples/) for implemented examples and use cases.
 
 # Contribution
 Feel free to contribute and help this project to grow. You can also just suggest features/enhancements - for more details check the [contributing file](https://github.com/mmichaelb/sharexserver/tree/master/.github/CONTRIBUTING.md).
