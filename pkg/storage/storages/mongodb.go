@@ -22,15 +22,18 @@ const (
 	statusWaiting = iota
 	statusActivated
 	statusFailed
-	// Data to generate new call references
+	// Data to generate new call/delete references
 	callReferenceChars  = "abcdefghijklmnopqrstuvxyzABCDEFGHIJKLMNOPQRSTUVXYZ1234567890"
 	callReferenceLength = 6
+	deleteReferenceChars = "abcdefghijklmnopqrstuvxyzABCDEFGHIJKLMNOPQRSTUVXYZ1234567890"
+	deleteReferenceLength = 16
 	// MongoDB index names
 	referenceIndexName = "reference_index"
 	// MongoDB key names
 	iDField            = "_id"
 	statusField        = "status"
 	callReferenceField = "call_reference"
+	deleteReferenceField = "delete_reference"
 	authorField        = "author"
 	filenameField      = "filename"
 	contentTypeField   = "content_type"
@@ -125,16 +128,18 @@ func (mongoStorage *MongoStorage) Store(entry *storage.Entry) (writer io.WriteCl
 	// use the provided collection to store the data in
 	collection := mongoStorage.session.DB(mongoStorage.DatabaseName).C(mongoStorage.CollectionName)
 randomCreation:
-	// create a new random ID and call reference
+// create a new random ID and call reference
 	objectId := bson.NewObjectId()
 	entry.ID = objectId
 	entry.CallReference = mongoStorage.newCallReference()
+	entry.DeleteReference = mongoStorage.newDeleteReference()
 	// insert the file details into the collection
 	if err = collection.Insert(
 		bson.D{
 			{iDField, entry.ID},
 			{statusField, statusWaiting}, // set entry to waiting because the file data is not stored yet
 			{callReferenceField, entry.CallReference},
+			{deleteReferenceField, entry.DeleteReference},
 			{authorField, entry.Author},
 			{filenameField, entry.Filename},
 			{contentTypeField, entry.ContentType},
@@ -176,6 +181,25 @@ func (mongoStorage *MongoStorage) newCallReference() string {
 			randomIndex = int(randomIntIndex.Int64())
 		}
 		buf.WriteString(callReferenceChars[randomIndex : randomIndex+1])
+	}
+	return buf.String()
+}
+
+//method which randomly creates a new delete reference
+func (mongoStorage *MongoStorage) newDeleteReference() string {
+	buf := bytes.NewBuffer([]byte{})
+	randomMaximum := big.NewInt(int64(len(deleteReferenceChars)))
+	for i := 0; i < deleteReferenceLength; i++ {
+		var randomIndex int
+		randomIntIndex, err := cryptRand.Int(cryptRand.Reader, randomMaximum)
+		if err != nil {
+			log.Printf("Could not get create random call reference with crypto/rand. "+
+				"Falling back to (insecure) math/rand package. %T: %v\n", err, err)
+			randomIndex = mathRand.Intn(len(deleteReferenceChars))
+		} else {
+			randomIndex = int(randomIntIndex.Int64())
+		}
+		buf.WriteString(deleteReferenceChars[randomIndex : randomIndex+1])
 	}
 	return buf.String()
 }
@@ -247,6 +271,32 @@ func (mongoStorage *MongoStorage) Request(callReference string) (*storage.Entry,
 	}
 	return entry, nil
 }
+
+// Delete is the implementation of the Storage.Delete method
+func (mongoStorage *MongoStorage) Delete(deleteReference string) (err error) {
+	collection := mongoStorage.session.DB(mongoStorage.DatabaseName).C(mongoStorage.CollectionName)
+	// initiate result instance
+	result := &bson.M{}
+	// find id and return not found if the entry could not be found
+	if err = collection.Find(bson.M{deleteReferenceField:deleteReference}).Select(bson.M{iDField:1}).One(result); err == mgo.ErrNotFound {
+		// return error that entry was not found
+		return storage.ErrEntryNotFound
+	} else if err != nil {
+		// return unwrapped error because something gone horrifically wrong
+		return
+	}
+	// delete entry by its deleteReference
+	if err = collection.Remove(bson.M{deleteReferenceField: deleteReference}); err == mgo.ErrNotFound {
+		// return error that entry was not found
+		return storage.ErrEntryNotFound
+	} else if err != nil {
+		// return unwrapped error because something gone horrifically wrong
+		return
+	}
+	// remove system file by using the previously requested id and return the returned error
+	return os.Remove(mongoStorage.DataFolder + (*result)[iDField].(bson.ObjectId).Hex())
+}
+
 
 // Close is the implementation of the Storage.Close method
 func (mongoStorage *MongoStorage) Close() error {

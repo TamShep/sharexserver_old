@@ -23,6 +23,7 @@ type ShareXRouter struct {
 func (shareXRouter *ShareXRouter) WrapHandler(router *mux.Router) {
 	// register endpoints
 	router.Path("/upload").Methods(http.MethodPost).HandlerFunc(shareXRouter.handleUpload)
+	router.Path(fmt.Sprintf("/delete/{%v}", deleteReferenceVar)).HandlerFunc(shareXRouter.handleDelete)
 	router.Path(fmt.Sprintf("/{%v}", callReferenceVar)).HandlerFunc(shareXRouter.handleRequest)
 }
 

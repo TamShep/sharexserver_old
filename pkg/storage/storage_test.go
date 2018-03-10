@@ -10,6 +10,7 @@ import (
 	"log"
 	"math/rand"
 	"time"
+	"encoding/base64"
 )
 
 const idLength = 32
@@ -91,6 +92,8 @@ idCreation:
 	}
 	// set call reference to the basic hex string
 	entry.CallReference = hex.EncodeToString(entry.ID.([]byte))
+	// set delete reference to the raw url base64 encoded string of the id
+	entry.DeleteReference = base64.RawURLEncoding.EncodeToString(entry.ID.([]byte))
 	testStorage.entries[entry] = []byte{}
 	return &closableStorageBuffer{testStorage, entry, bytes.NewBuffer([]byte{})}, err
 }
@@ -106,6 +109,16 @@ func (testStorage *TestStorage) Request(callReference string) (*storage.Entry, e
 		}
 	}
 	return nil, storage.ErrEntryNotFound
+}
+
+// Delete is the implementation of the storage.FileStorage.Delete method.
+func (testStorage *TestStorage) Delete(deleteReference string) (error) {
+	for entry, _ := range testStorage.entries {
+		if entry.DeleteReference == deleteReference {
+			delete(testStorage.entries, entry)
+		}
+	}
+	return nil
 }
 
 // Close is the implementation of the storage.FileStorage.Close method.
@@ -157,6 +170,10 @@ func ExampleFileStorage() {
 			panic(err)
 		}
 		fmt.Println(bytes.Equal(testBytes, requestTestBytes))
+	}
+	if err := fileStorage.Delete(testEntry.DeleteReference); err != nil {
+		log.Println("There was an error while deleting the stored TestEntry.")
+		panic(err)
 	}
 	if err := fileStorage.Close(); err != nil {
 		log.Println("There was an error while closing the FileStorage.")

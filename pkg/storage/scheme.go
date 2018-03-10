@@ -19,6 +19,8 @@ type FileStorage interface {
 	// Request searches for an entry by the provided callReference which is the substring which is used in the uri.
 	// It returns an entry or a specific error (see above) or an unwrapped one if something goes wrong.
 	Request(callReference string) (*Entry, error)
+	// Delete deletes an entry by the given deleteReference.
+	Delete(deleteReference string) (error)
 	// Close shutdowns/closes the FileStorage and allows the storage to exit gracefully. It returns an error if
 	// something goes wrong.
 	Close() error

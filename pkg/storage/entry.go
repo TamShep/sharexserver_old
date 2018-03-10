@@ -27,6 +27,8 @@ type Entry struct {
 	ID ID
 	// CallReference is also an identical token but this one is used in the request uri.
 	CallReference string
+	//DeleteReference is an token used for deleting the entry.
+	DeleteReference string
 	// AuthorIdentifier determines the uploader information.
 	Author AuthorIdentifier
 	// Filename is the name of the file (contains the application name and date) which is sent with by the ShareX client.

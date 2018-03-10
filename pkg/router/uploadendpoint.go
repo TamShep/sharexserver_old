@@ -7,6 +7,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"time"
+	"encoding/json"
 )
 
 const (
@@ -58,10 +59,17 @@ func (shareXRouter *ShareXRouter) handleUpload(writer http.ResponseWriter, reque
 		return
 	}
 	log.Printf("Created entry %v (%v bytes)\n", entry.ID, total)
-	// send back entry url
-	writer.WriteHeader(http.StatusOK)
-	// there is no need of writing the whole url - therefore only the call reference if written
-	writer.Write([]byte(entry.CallReference))
+	// send json response
+	response := Response{entry.CallReference, entry.DeleteReference}
+	jsonResponse, err := json.Marshal(response);
+	if err != nil {
+		shareXRouter.sendInternalError(writer, "creation of the json response message", err)
+		return
+	}
+	// set content type header to application/json
+	writer.Header().Set("Content-Type", "application/json")
+	// write the above created json message to the client
+	writer.Write([]byte(jsonResponse))
 }
 
 // writeFile writes the received uploaded data to the provided writer by the stored entry
@@ -82,4 +90,9 @@ func writeFile(file multipart.File, fileWriter io.WriteCloser) (int64, error) {
 		}
 	}
 	return total, nil
+}
+
+type Response struct {
+	CallReference string `json:"call_reference"`
+	DeleteReference string `json:"delete_reference"`
 }

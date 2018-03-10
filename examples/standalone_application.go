@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/gorilla/mux"
 	"github.com/mmichaelb/sharexserver/pkg/router"
 	"github.com/mmichaelb/sharexserver/pkg/storage/storages"
+	"github.com/gorilla/mux"
 	"gopkg.in/mgo.v2"
 	"log"
 	"net/http"

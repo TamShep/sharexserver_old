@@ -40,5 +40,17 @@ go get -u github.com/mmichaelb/sharexserver/cmd/sharexserver
 ```
 Make sure to check out the [examples package](https://github.com/mmichaelb/sharexserver/tree/master/examples/) for implemented examples and use cases.
 
+# Example configuration for ShareX client
+```
+{
+  "Name": "sharexserver Example",
+  "DestinationType": "ImageUploader, TextUploader, FileUploader",
+  "RequestURL": "https://example.com/upload",
+  "FileFormName": "file",
+  "URL": "https://example.com/$json:call_reference$",
+  "DeletionURL": "https://example.com/delete/$json:delete_reference$"
+}
+```
+
 # Contribution
 Feel free to contribute and help this project to grow. You can also just suggest features/enhancements - for more details check the [contributing file](https://github.com/mmichaelb/sharexserver/tree/master/.github/CONTRIBUTING.md).
